@@ -1,0 +1,37 @@
+### intial exposure (will be adjasted aytomatically ) when searching static markers
+exposure_static_markers: 50
+exposure_cube_markers: 11
+### size of marker
+len_of_cube_markers: 0.11
+##### len of marker cube (side of cube) in meters
+len_of_cube: 0.10
+### used boad type (aka cv::aruco::PREDEFINED_DICTIONARY_NAME)
+used_board_type: 8
+##### ids of markers {fisrt - face side , second - left , 3rd - back, 4th - right , 5th - top}
+small_sber_ids: [46, 47, 48, 49, 1, 2, 3, 99]
+small_top_side_ids: [1, 2, 3]
+big_sber_ids: [39, 42, 40, 44, 6, 8, 99, 99]
+big_enemy_ids: [43, 45, 31, 41, 7, 99, 99, 99]
+small_enemy_ids: [36, 35, 34, 33, 4, 99, 99, 99]
+
+#### number of static markers on the field
+number_of_static_markers: 4
+###static markers ids
+static_markers_ids: [5, 0, 3, 2]
+static_marker_sizes: 0.16
+used_cube_sides: 8
+static_marker_positions: [0, 1, 1]
+brightness_threshold: 4
+camera_position_green: [1.39, 2.02, 1.05]
+camera_position_orange: [1.62, 2.0, 1.03]
+max_missed_static_markers: 20
+markers:
+  {
+    small_sber_cube_ids: "46, 47, 48, 49",
+    big_sber_ids: "39, 42, 40, 44",
+    small_top_side_ids: "1,2,3",
+    big_enemy_ids: "43, 45, 31, 41, 7, 99, 99, 99",
+    small_enemy_ids: "36, 35, 34, 33, 4, 99, 99 , 99",
+  }
+
+markers_rotation: {normal: "46", clockwise: "47", counterClockwise: "48", upSide: "49" }

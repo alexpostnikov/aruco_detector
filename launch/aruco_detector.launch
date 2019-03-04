@@ -1,0 +1,61 @@
+<launch>    
+    <arg name="camera_format" default="4"/>
+    <arg name="log_output" default="log" />
+    <arg name="video_device" default="/dev/video1"   />
+    <node pkg="ocam_usb_cam" type="ocam_usb_cam_node" name="ocam_usb_cam_node" required="true" clear_params="true" output="log" >
+        <param name="camera_format" value="$(arg camera_format)" />
+	<param name="video_device" value="$(arg video_device)" />
+    </node>
+
+    <!--<node pkg="tf2_ros" type="static_transform_publisher" name="map_to_aruco_cam"  args="2 1.5 1 0.99991 0.0137 0 0  map aruco_cam" />-->
+    <node pkg="aruco_detector" type="aruco_detector_node" name ="aruco_detector_node" output="log" />    
+    <rosparam command="load" file="$(find aruco_detector)/aruco_detector_params.yml" />
+    
+    <group>
+        <machine name ="small_robot" address ="10.0.0.34" env-loader="/home/odroid/eurobot_2018/high_level/src/aruco_detector/launch/setup.bash" user ="odroid" password="odroid" />
+        <node machine ="small_robot" name="stm_driver" pkg="ros_stm_driver" type="ros__stm_driver.py"> 
+            <param name="debug_level" value="0"/>
+        </node> 
+        <!-- <node machine="small_robot" name="tree"
+            pkg="big_tree_decision"
+            type="start" > -->
+        <!-- <rosparam command="load" file="$(find vision)/params/construction_plan_params.yaml" /> -->
+        <!-- </node> -->
+        <rosparam command="load" file="$(find robot_bringup)/params/big_robot_green_side.yaml" />
+        <!-- <include file="$(find path_planning)/launch/path_planner.launch" />    -->
+
+        <node machine = "small_robot" pkg="tf2_ros" type="static_transform_publisher" name="map_to_odom" args="1 1 0 0 0 0 map odom" />
+
+        <!--<node machine="small_robot" pkg="cost_map_server" name ="cost_map_server" type="cost_map_server" args="$(find cost_map_server)/param/cost_map_param.yaml"/>-->
+
+        <remap from="/imu/local_position/pose" to="/imu" />
+       <!-- <node machine = "small_robot"  name="imu" pkg="imu" type="imu_node">
+            <param name="device" value="/dev/ttyUSB0"/>
+            <param name="baudrate" value="115200"/>
+            <rosparam command="load" file="$(find imu)/cfg/Naze32_rev6.yaml"/>
+            <rosparam command="load" file="$(find imu)/cfg/UpdateRates_RPiZero.yaml"/>
+        </node>-->
+
+        <node machine="small_robot" pkg="cost_map_server"
+            name="cost_map_server"
+            type="cost_map_server"
+            clear_params="true"
+            output="$(arg log_output)"
+	    required="false"
+            args="$(find cost_map_server)/param/image_resource.yaml">
+            <rosparam command="load" file="$(find cost_map_server)/param/cost_map_param_big_robot.yaml" />
+        </node>
+
+
+        <node machine ="small_robot" name="particle_filter"  pkg="localization" type="particle_filter_node" output='screen'>
+                <rosparam command="load" file="$(find localization)/params/localization_params.yaml" />
+        </node>
+        <node machine="small_robot" pkg="path_planning" type="path_planner" name="path_planner" required="true">
+            <rosparam command="load" file="$(find path_planning)/params/path_planning_params.yaml" />
+        </node>
+
+
+        <node machine="small_robot" pkg="ros_stm_bridge" type="ros_stm_bridge" name="ros_stm_bridge" required="false"  output="screen"/>
+    </group>
+    
+</launch>
