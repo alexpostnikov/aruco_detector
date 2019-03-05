@@ -58,6 +58,8 @@ include_directories(
 
 add_executable(aruco_detector_node src/aruco_main.cpp src/aruco_marker_classes.cpp src/aruco_utils.cpp src/aruco_scene.cpp src/serialunix.cpp)
 
+add_executable(aruco_show_id_node src/aruco_show_id_node.cpp )
+
 
 target_link_libraries (
 	aruco_detector_node 
@@ -65,7 +67,14 @@ target_link_libraries (
 	${OpenCV_LIBRARIES}
 	${Eigen_LIBRARIES}
 	serial
+)
 
+target_link_libraries (
+	aruco_show_id_node
+	${catkin_LIBRARIES} 
+	${OpenCV_LIBRARIES}
+	${Eigen_LIBRARIES}
+	serial
 )
 
 add_dependencies(aruco_detector_node aruco_detector_generate_messages_cpp)
