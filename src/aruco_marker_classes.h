@@ -16,21 +16,24 @@
 #include <string>
 typedef struct
 {
-  // Number of particles
+  // params
   int exposure_static_markers = 30;
   int exposure_cube_markers = 7;
   int used_cube_sides = 5;
   int static_state_exposure = 50;
   int cube_state_exposure = 10;
   int used_board_type = 8;
+  int use_top_line_marker = 1;
+  int use_bottom_line_marker = 0;
   float len_of_cube_markers = 0.064;
   float len_of_cube = 0.08;
-
+  float width_marker = 0.06;
   std::vector<int> big_sber_ids =   {99, 99, 99, 99, 99, 99, 99, 99 };
   std::vector<int> small_sber_ids = { 99, 99, 99, 99, 99, 99, 99, 99 };
   std::vector<int> big_enemy_ids =  {99, 99, 99, 99, 99, 99, 99, 99 };
   std::vector<int> small_enemy_ids = { 99, 99, 99, 99, 99, 99, 99, 99 };
   std::vector<int> small_top_side_ids = { 1, 2, 3, 99, 99, 99, 99 };
+  
   int number_of_static_markers = 6;
   std::vector<int> static_markers_ids = { 5, 0, 2, 3, 1, 6 };
   float static_marker_sizes = 0.16;

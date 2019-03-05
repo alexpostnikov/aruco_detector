@@ -44,7 +44,7 @@
 #include "serialunix.h"
 using namespace cv;
 
-#define DEBUG
+
 
 namespace enc = sensor_msgs::image_encodings;
 void soft_delay(long int ticks)
@@ -61,7 +61,7 @@ void switchToCubeFinding(SceneHolder sceneHolder, ros::ServiceClient changeExpos
 void checkExposureForStaticMarkers(SceneHolder sceneHolder, ros::ServiceClient changeExposureClient, aruco_detector::ChangeExposure changeExposureClientValue);
 int main(int argc, char** argv)
 {
-  std::string path("/dev/ttyACM0");
+  // std::string path("/dev/ttyACM0");
   ros::init(argc, argv, "aruco_detector_node");
 
   ros::NodeHandle pnh;  // parameters node handler
