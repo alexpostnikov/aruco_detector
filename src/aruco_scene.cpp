@@ -16,7 +16,6 @@ namespace enc = sensor_msgs::image_encodings;
 SceneHolder::SceneHolder()
 {
   throw(std::unexpected);
-  
 }
 
 SceneHolder::SceneHolder(ArucoDetectorParameters arucoParams)
@@ -42,18 +41,17 @@ SceneHolder::SceneHolder(ArucoDetectorParameters arucoParams)
   arucoCubes_[2].cube_side_qr_id_ = params_.big_enemy_ids;
   arucoCubes_[3].cube_side_qr_id_ = params_.small_enemy_ids;
 
-
   dictionary_ = cv::aruco::getPredefinedDictionary(params_.used_board_type);
   /** load detector params from yml file**/
   detectorParams_ = cv::aruco::DetectorParameters::create();
-  
-    detectorParams_->adaptiveThreshWinSizeMin = 3;
-    detectorParams_->adaptiveThreshWinSizeMax = 23;
-    detectorParams_->adaptiveThreshWinSizeStep = 13;
-    detectorParams_->adaptiveThreshConstant = 15;
-    detectorParams_->perspectiveRemovePixelPerCell = 15;
-    detectorParams_->perspectiveRemoveIgnoredMarginPerCell = 0.33;
-    detectorParams_->polygonalApproxAccuracyRate = 0.1;
+
+  detectorParams_->adaptiveThreshWinSizeMin = 3;
+  detectorParams_->adaptiveThreshWinSizeMax = 23;
+  detectorParams_->adaptiveThreshWinSizeStep = 13;
+  detectorParams_->adaptiveThreshConstant = 15;
+  detectorParams_->perspectiveRemovePixelPerCell = 15;
+  detectorParams_->perspectiveRemoveIgnoredMarginPerCell = 0.33;
+  detectorParams_->polygonalApproxAccuracyRate = 0.1;
 }
 
 void SceneHolder::imageCallback(const sensor_msgs::ImageConstPtr &original_image)
@@ -71,10 +69,11 @@ void SceneHolder::imageCallback(const sensor_msgs::ImageConstPtr &original_image
   {
     ROS_ERROR("Could not convert from '%s' to 'MONO8'.", original_image->encoding.c_str());
   }
-  
+
   if (scene_status_ == Scene_statuses::search_cubes)
   {
-    preProcessImageBrighnessMask(this->cv_ptr_->image, cropped_scene_.areas_, cropped_scene_.candidates_, params_.brightness_threshold);
+    preProcessImageBrighnessMask(this->cv_ptr_->image, cropped_scene_.areas_, cropped_scene_.candidates_,
+                                 params_.brightness_threshold);
   }
   timestamp_ = original_image->header.stamp;
 }
@@ -85,8 +84,8 @@ void SceneHolder::loadCameraParams()
       readCameraParameters(ros::package::getPath("aruco_detector") + "/camera_params.yml", SceneHolder::camera_matrix_,
                            SceneHolder::dist_coeffs_);
   if (result_reading_camera_params == false)
-    ROS_ERROR("Could not open camera parasm file "); //: '%s'",
-                                                     // ros::package::getPath("aruco_detector")+"/camera_params.yml");
+    ROS_ERROR("Could not open camera parasm file ");  //: '%s'",
+                                                      // ros::package::getPath("aruco_detector")+"/camera_params.yml");
 }
 
 // find markers and save pixels of corners and ids
@@ -96,7 +95,6 @@ void SceneHolder::findMarkers()
   std::vector<std::vector<cv::Point2f>> corners;
   std::vector<cv::Vec3d> rvec, tvec;
 
-  
   if (scene_status_ == Scene_statuses::search_cubes)
   {
     // cout <<" cropped_scene_.candidates_.size() "<< cropped_scene_.candidates_.size() << endl;
@@ -138,9 +136,10 @@ void SceneHolder::findMarkers()
 
 void SceneHolder::allocateStaticMarkers()
 {
-  
   if (scene_status_ != Scene_statuses::search_static)
-    {return;}
+  {
+    return;
+  }
 
   if (found_markers_.size() > 0)
   {
@@ -167,7 +166,10 @@ void SceneHolder::allocateStaticMarkers()
 
 void SceneHolder::allocateCubes()
 {
-  if (scene_status_ == Scene_statuses::search_static) {return;}
+  if (scene_status_ == Scene_statuses::search_static)
+  {
+    return;
+  }
   if (found_markers_.size() < 0)
   {
     // SET cubes as non-visible?
@@ -239,7 +241,7 @@ void SceneHolder::showImages(bool is_draw_markers, bool is_draw_table_perspectiv
 
         oss << std::setprecision(3) << coords.at<double>(0, 0) << " " << coords.at<double>(1, 0) << " "
             << coords.at<double>(2, 0);
-        
+
         putText(cv_ptr_->image, oss.str(), static_marker.corners_[0], FONT_HERSHEY_SIMPLEX, 0.5, Color, 0);
         oss.str("");
         oss.clear();
@@ -275,7 +277,7 @@ void SceneHolder::showImages(bool is_draw_markers, bool is_draw_table_perspectiv
     }
     cv::aruco::drawDetectedMarkers(cv_ptr_->image, corners_vector, ids_vector);
   }
-  
+
   if ((new_transform_from_cam_to_map_.cols == 4) && (is_draw_table_perspective))
   {
     ShowTablePerspevtive();
@@ -296,13 +298,13 @@ void SceneHolder::showImages(bool is_draw_markers, bool is_draw_table_perspectiv
 void SceneHolder::calc_new_transform()
 {
   static int counter_fails_static_detection =
-      0; // counter that increments if one of static  markers in pictureis epsent
+      0;  // counter that increments if one of static  markers in pictureis epsent
   if (scene_status_ != Scene_statuses::search_static)
   {
     return;
   }
 
-  if (counter_fails_static_detection > params_.max_missed_static_markers_) //
+  if (counter_fails_static_detection > params_.max_missed_static_markers_)  //
   {
     ROS_WARN_STREAM(" !!failed to detect all static markers, switching to cubefinder alg!! ");
     calibration_status_ = false;
@@ -381,7 +383,7 @@ void SceneHolder::calcTransform()
     {
       ROS_ERROR_STREAM("static_marker id: " << static_marker.id_ << " is unvisible ");
       counter_fails_static_detection++;
-      if (counter_fails_static_detection > 3) // TODO add timer here!
+      if (counter_fails_static_detection > 3)  // TODO add timer here!
       {
         ROS_WARN_STREAM(" !!failed to detect all static markers, switching to cubefinder alg!! ");
         counter_fails_static_detection = 0;
@@ -427,14 +429,14 @@ void SceneHolder::calcTransform()
 
   vector<cv::Point3f> input_arr;
 
-  input_arr.push_back(cv::Point3f(0.15, 0.15, 0.12)); // FIFTH
-  input_arr.push_back(cv::Point3f(2.85, 0.15, 0.12)); // NULLTH
-                                                      // input_arr.push_back(cv::Point3f (0.62, 1.2,  0.0)); // SECOND
-  input_arr.push_back(cv::Point3f(0.62, 0.10, 0.45)); // THIRD
+  input_arr.push_back(cv::Point3f(0.15, 0.15, 0.12));  // FIFTH
+  input_arr.push_back(cv::Point3f(2.85, 0.15, 0.12));  // NULLTH
+                                                       // input_arr.push_back(cv::Point3f (0.62, 1.2,  0.0)); // SECOND
+  input_arr.push_back(cv::Point3f(0.62, 0.10, 0.45));  // THIRD
   // input_arr.push_back(cv::Point3f (1.5,  1.5, 0.0));   // FIRST
-  input_arr.push_back(cv::Point3f(2.38, 1.64, 0.0)); // SIXTH
+  input_arr.push_back(cv::Point3f(2.38, 1.64, 0.0));  // SIXTH
   input_arr.push_back(
-      cv::Point3f(params_.camera_position[0], params_.camera_position[1], params_.camera_position[2])); // CAM
+      cv::Point3f(params_.camera_position[0], params_.camera_position[1], params_.camera_position[2]));  // CAM
   // ROS_ERROR_STREAM(params_.camera_position[0] <<"  " <<  params_.camera_position[1]<<" "<<
   // params_.camera_position[2]);
   std::vector<uchar> inliers;
@@ -656,16 +658,29 @@ void SceneHolder::clearOldData()
 
 void check_intersection_and_extend(vector<Rect> &rects, Rect rect)
 {
-  // check current rect with all previous rects -> if intersection-> expand else add to vector 
-  for (uint8_t i = 0; i < rects.size(); i++)
+  // check current rect with all previous rects -> if intersection-> expand else add to vector
+  uint8_t i = 0;
+  bool do_append = true;
+  while (i < rects.size())
   {
-    if ((rects[i] & rect).area() > 0)
+    if ( ((rects[i] & rect).area() > 0) & ((rects[i] & rect).area() < rect.area()) )
     {
       rects[i] = (rects[i] | rect);
-      return;
+      rect = rects[i];
+      do_append = false;
+      i = 0;
+    }
+    else
+    {
+      i += 1;
+      if ((rects[i] & rect).area() < rect.area())
+      {
+        do_append = false;
+      }
     }
   }
-  rects.push_back(rect);
+  if (do_append)
+    rects.push_back(rect);
 }
 
 void preProcessImageBrighnessMask(Mat &image, vector<Rect> &rects, vector<Mat> &candidates, int brightness_treshold)
@@ -689,20 +704,19 @@ void preProcessImageBrighnessMask(Mat &image, vector<Rect> &rects, vector<Mat> &
       {
         // if in area +-7 pixels rectange-> combine
         int j_min;
-        ((j - rect_size) > 0)? j_min = j - rect_size : j_min = 0;
+        ((j - rect_size) > 0) ? j_min = j - rect_size : j_min = 0;
         int i_min;
-        ((i - rect_size) > 0)? i_min = i - rect_size : i_min = 0;
+        ((i - rect_size) > 0) ? i_min = i - rect_size : i_min = 0;
 
         int j_max;
-        ((j + rect_size) > roi.rows)? j_max = j + rect_size : j_max = roi.rows;
+        ((j + rect_size) > roi.rows) ? j_max = j + rect_size : j_max = roi.rows;
         int i_max;
-        ((i + rect_size) > roi.cols)? i_max = i + rect_size : i_max = roi.cols;
-        check_intersection_and_extend(rects,
-                                      Rect(Point((j_min) * devision_coeff, (i_min) * devision_coeff),
-                                           Point((j_max) * devision_coeff, (i_max) * devision_coeff)));
+        ((i + rect_size) > roi.cols) ? i_max = i + rect_size : i_max = roi.cols;
+        check_intersection_and_extend(rects, Rect(Point((j_min)*devision_coeff, (i_min)*devision_coeff),
+                                                  Point((j_max)*devision_coeff, (i_max)*devision_coeff)));
       }
   }
-  
+
   for (auto &rect : rects)
   {
     rect = rect & (Rect(0, 0, image.cols - 1, image.rows - 1));
@@ -713,9 +727,6 @@ void preProcessImageBrighnessMask(Mat &image, vector<Rect> &rects, vector<Mat> &
     }
   }
 }
-
-
-
 
 void SceneHolder::saveStaticMarkersPosition()
 {
@@ -748,9 +759,9 @@ geometry_msgs::PoseStamped SceneHolder::calc_msg_from_position(MarkerCube &aruco
 
   msg.pose.position.x = arucoCube.center_.x;
   msg.pose.position.y = arucoCube.center_.y;
-  msg.pose.position.z = 0; // coordinates_in_Map_base.at<double>(2,0);
+  msg.pose.position.z = 0;  // coordinates_in_Map_base.at<double>(2,0);
 
-  Mat rvec_mat; //= eulerAnglesToRotationMatrix();
+  Mat rvec_mat;  //= eulerAnglesToRotationMatrix();
   Vec3d rvec = arucoCube.markers_[0].getRvec();
   Rodrigues(rvec, rvec_mat);
 

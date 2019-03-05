@@ -140,11 +140,11 @@ bool readRosParams(ros::NodeHandle pnh, ArucoDetectorParameters &aruco_params)
   pnh.getParam("exposure_cube_markers", aruco_params.exposure_cube_markers);
   pnh.getParam("len_of_cube_markers", aruco_params.len_of_cube_markers);
   pnh.getParam("len_of_cube", aruco_params.len_of_cube);
-  pnh.getParam("big_sber_ids", aruco_params.big_sber_ids);
-  pnh.getParam("small_sber_ids", aruco_params.small_sber_ids);
-  pnh.getParam("small_top_side_ids", aruco_params.small_top_side_ids);
-  pnh.getParam("big_enemy_ids", aruco_params.big_enemy_ids);
-  pnh.getParam("small_enemy_ids", aruco_params.small_enemy_ids);
+  // pnh.getParam("big_sber_ids", aruco_params.big_sber_ids);
+  // pnh.getParam("small_sber_ids", aruco_params.small_sber_ids);
+  // pnh.getParam("small_top_side_ids", aruco_params.small_top_side_ids);
+  // pnh.getParam("big_enemy_ids", aruco_params.big_enemy_ids);
+  // pnh.getParam("small_enemy_ids", aruco_params.small_enemy_ids);
   pnh.getParam("number_of_static_markers", aruco_params.number_of_static_markers);
   pnh.getParam("static_markers_ids", aruco_params.static_markers_ids);
   pnh.getParam("static_marker_sizes", aruco_params.static_marker_sizes);
@@ -154,7 +154,10 @@ bool readRosParams(ros::NodeHandle pnh, ArucoDetectorParameters &aruco_params)
   pnh.getParam("max_missed_static_markers", aruco_params.max_missed_static_markers_);
   pnh.getParam("used_cube_sides", aruco_params.used_cube_sides);
   pnh.getParam("used_board_type", aruco_params.used_board_type);
-  
+  pnh.getParam("width_marker", aruco_params.width_marker);
+  pnh.getParam("use_top_line_marker", aruco_params.use_top_line_marker);
+  pnh.getParam("use_bottom_line_marker", aruco_params.use_bottom_line_marker);
+
   // ---------- receive markers_ids. Due to ros params server "feature" need to reparse string to vector ----------//
   
   std::map<std::string, std::string> markers_ids;
@@ -163,7 +166,11 @@ bool readRosParams(ros::NodeHandle pnh, ArucoDetectorParameters &aruco_params)
   // structure : {key : "id, id, id, id"}
   for(auto const& imap: markers_ids) markers_ids_vect[imap.first] = parse_string_ids(imap.second);
   aruco_params.marker_ids = markers_ids_vect;
-  
+  aruco_params.big_sber_ids = markers_ids_vect["big_sber_cube_ids"];
+  aruco_params.small_sber_ids = markers_ids_vect["small_sber_cube_ids"];
+  aruco_params.small_top_side_ids = markers_ids_vect["small_top_side_ids"];
+  aruco_params.big_enemy_ids = markers_ids_vect["big_enemy_ids"];
+  aruco_params.small_enemy_ids = markers_ids_vect["small_enemy_ids"];
   // ------------end ----------//
 
 

@@ -3,16 +3,21 @@ exposure_static_markers: 50
 exposure_cube_markers: 11
 ### size of marker
 len_of_cube_markers: 0.11
+
+use_top_line_marker : 1
+use_bottom_line_marker : 1
+
 ##### len of marker cube (side of cube) in meters
 len_of_cube: 0.10
+width_marker: 0.065
 ### used boad type (aka cv::aruco::PREDEFINED_DICTIONARY_NAME)
 used_board_type: 8
 ##### ids of markers {fisrt - face side , second - left , 3rd - back, 4th - right , 5th - top}
-small_sber_ids: [46, 47, 48, 49, 1, 2, 3, 99]
-small_top_side_ids: [1, 2, 3]
-big_sber_ids: [39, 42, 40, 44, 6, 8, 99, 99]
-big_enemy_ids: [43, 45, 31, 41, 7, 99, 99, 99]
-small_enemy_ids: [36, 35, 34, 33, 4, 99, 99, 99]
+# small_sber_ids: [46, 47, 48, 49, 1, 2, 3, 99]
+# small_top_side_ids: [1, 2, 3]
+# big_sber_ids: [39, 42, 40, 44, 6, 8, 99, 99]
+# big_enemy_ids: [43, 45, 31, 41, 7, 99, 99, 99]
+# small_enemy_ids: [36, 35, 34, 33, 4, 99, 99, 99]
 
 #### number of static markers on the field
 number_of_static_markers: 4
@@ -28,10 +33,10 @@ max_missed_static_markers: 20
 markers:
   {
     small_sber_cube_ids: "46, 47, 48, 49",
-    big_sber_ids: "39, 42, 40, 44",
+    big_sber_cube_ids: "39, 42, 40, 44",
     small_top_side_ids: "1,2,3",
     big_enemy_ids: "43, 45, 31, 41, 7, 99, 99, 99",
     small_enemy_ids: "36, 35, 34, 33, 4, 99, 99 , 99",
   }
-
-markers_rotation: {normal: "46", clockwise: "47", counterClockwise: "48", upSide: "49" }
+# by dafault all markers ARE NORMAL
+markers_rotation: {normal: "99", clockwise: "99", counterClockwise: "99", upSide: "46" } 
