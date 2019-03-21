@@ -4,6 +4,8 @@
 #include <vector>
 #include "aruco_marker_classes.h"
 #include "ros/ros.h"
+#include "aruco_detector/SetSide.h"
+#include "aruco_detector/ArucoRecalibrate.h"
 
 namespace Scene_statuses
 {
@@ -58,6 +60,8 @@ public:
   std::vector<Marker> found_markers_;                         // every found marker
   int numb_visible_static_markers_;                           // number of visible static markers
   void loadCameraParams();                                    // load camera matrix and dist coeffs
+  bool setSide_cb(aruco_detector::SetSide::Request &req, aruco_detector::SetSide::Response &res);
+  bool recalibrate_cb(aruco_detector::ArucoRecalibrate::Request &req, aruco_detector::ArucoRecalibrate::Response &res);
   void imageCallback(const sensor_msgs::ImageConstPtr& msg);  // receiving new image from cam driver
   void findMarkers();                                         // find markers from image
   void allocateStaticMarkers();                               // check all found markers for containing static markers

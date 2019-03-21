@@ -20,10 +20,10 @@ used_board_type: 8
 # small_enemy_ids: [36, 35, 34, 33, 4, 99, 99, 99]
 
 #### number of static markers on the field
-number_of_static_markers: 4
+number_of_static_markers: 2
 ###static markers ids
-static_markers_ids: [5, 0, 3, 2]
-static_marker_sizes: 0.16
+static_markers_ids: [43, 33]
+static_marker_sizes: 0.065
 used_cube_sides: 8
 static_marker_positions: [0, 1, 1]
 brightness_threshold: 4
@@ -40,3 +40,4 @@ markers:
   }
 # by dafault all markers ARE NORMAL
 markers_rotation: {normal: "99", clockwise: "99", counterClockwise: "99", upSide: "46" } 
+# 43 33

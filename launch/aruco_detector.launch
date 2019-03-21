@@ -1,7 +1,7 @@
 <launch>    
     <arg name="camera_format" default="4"/>
     <arg name="log_output" default="log" />
-    <arg name="video_device" default="/dev/video1"   />
+    <arg name="video_device" default="/dev/video0"   />
     <node pkg="ocam_usb_cam" type="ocam_usb_cam_node" name="ocam_usb_cam_node" required="true" clear_params="true" output="log" >
         <param name="camera_format" value="$(arg camera_format)" />
 	<param name="video_device" value="$(arg video_device)" />

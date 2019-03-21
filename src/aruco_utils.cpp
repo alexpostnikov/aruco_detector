@@ -157,7 +157,9 @@ bool readRosParams(ros::NodeHandle pnh, ArucoDetectorParameters &aruco_params)
   pnh.getParam("width_marker", aruco_params.width_marker);
   pnh.getParam("use_top_line_marker", aruco_params.use_top_line_marker);
   pnh.getParam("use_bottom_line_marker", aruco_params.use_bottom_line_marker);
-
+  ROS_WARN_STREAM ( "aruco_params.static_markers_ids: ");
+  for (auto static_markers_id :aruco_params.static_markers_ids)
+    ROS_WARN_STREAM (static_markers_id);
   // ---------- receive markers_ids. Due to ros params server "feature" need to reparse string to vector ----------//
   
   std::map<std::string, std::string> markers_ids;
@@ -412,8 +414,8 @@ Mat new_allocation_maps(Point3d marker1_cam_base, Point3d marker2_cam_base, std:
 {
 
 
-  Point3d marker1_map_base(0.15, 0.15, 0.12);
-  Point3d marker2_map_base(3 - 0.15, 0.15, 0.12);
+  Point3d marker1_map_base(0.07, 0.07, 0.06);
+  Point3d marker2_map_base(3 - 0.07, 0.07, 0.06);
   Point3d left_marker, right_marker;
   if (marker1_cam_base.x < marker2_cam_base.x)
   {

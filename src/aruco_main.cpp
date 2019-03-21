@@ -38,13 +38,13 @@
 #include <cstdlib>
 #include <ctime>
 #include "aruco_detector/ChangeExposure.h"
+#include "aruco_detector/SetSide.h"
+#include "aruco_detector/ArucoRecalibrate.h"
 #include "aruco_marker_classes.h"
 #include "aruco_scene.h"
 #include "aruco_utils.h"
-#include "serialunix.h"
+//#include "serialunix.h"
 using namespace cv;
-
-
 
 namespace enc = sensor_msgs::image_encodings;
 void soft_delay(long int ticks)
@@ -59,16 +59,19 @@ volatile bool recalibrate = false;
 int calc_new_exposure(cv::Mat image, int area, int target_brightness, int current_exposure);
 void switchToCubeFinding(SceneHolder sceneHolder, ros::ServiceClient changeExposureClient, aruco_detector::ChangeExposure changeExposureClientValue, Scene_statuses::Scene_status prev_status);
 void checkExposureForStaticMarkers(SceneHolder sceneHolder, ros::ServiceClient changeExposureClient, aruco_detector::ChangeExposure changeExposureClientValue);
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
   // std::string path("/dev/ttyACM0");
   ros::init(argc, argv, "aruco_detector_node");
 
-  ros::NodeHandle pnh;  // parameters node handler
+  ros::NodeHandle pnh; // parameters node handler
   readRosParams(pnh, aruco_params);
   SceneHolder sceneHolder(aruco_params);
   sceneHolder.loadCameraParams();
   ros::NodeHandle n;
+
+  ros::ServiceServer service_side = n.advertiseService("SetSide", &SceneHolder::setSide_cb, &sceneHolder); //("SetSide", setSide_cb);
+  ros::ServiceServer service_recalib = n.advertiseService("ArucoRecalibrate", &SceneHolder::recalibrate_cb, &sceneHolder); //("SetSide", setSide_cb);
   ros::ServiceClient changeExposureClient = n.serviceClient<aruco_detector::ChangeExposure>("ChangeExposure");
   ros::Subscriber sub = n.subscribe("ocam/image_raw", 1, &SceneHolder::imageCallback, &sceneHolder);
   ros::Publisher enemy_robot_pose1 = n.advertise<geometry_msgs::PoseStamped>("/enemy_robot1/aruco", 30);
@@ -81,7 +84,6 @@ int main(int argc, char** argv)
 
   changeExposureClientValue.request.a = aruco_params.exposure_static_markers;
 
-  
   // ------------- set initial Exposure  -------------
   int timeout = 10;
   while (!changeExposureClient.call(changeExposureClientValue) && (timeout--))
@@ -131,7 +133,7 @@ int main(int argc, char** argv)
 void checkExposureForStaticMarkers(SceneHolder sceneHolder, ros::ServiceClient changeExposureClient, aruco_detector::ChangeExposure changeExposureClientValue)
 {
   if ((sceneHolder.scene_status_ == Scene_statuses::search_static) &&
-    (sceneHolder.numb_visible_static_markers_ != sceneHolder.params_.number_of_static_markers))
+      (sceneHolder.numb_visible_static_markers_ != sceneHolder.params_.number_of_static_markers))
   {
     int new_exposure = calc_new_exposure(sceneHolder.cv_ptr_->image, 100, 70, changeExposureClientValue.request.a);
     if (new_exposure > 0)
@@ -147,18 +149,19 @@ void checkExposureForStaticMarkers(SceneHolder sceneHolder, ros::ServiceClient c
   }
 }
 
-void switchToCubeFinding(SceneHolder sceneHolder, ros::ServiceClient changeExposureClient, aruco_detector::ChangeExposure changeExposureClientValue, Scene_statuses::Scene_status prev_status){
+void switchToCubeFinding(SceneHolder sceneHolder, ros::ServiceClient changeExposureClient, aruco_detector::ChangeExposure changeExposureClientValue, Scene_statuses::Scene_status prev_status)
+{
 
   if (prev_status != sceneHolder.scene_status_)
-      {
-        changeExposureClientValue.request.a = sceneHolder.params_.exposure_cube_markers;
+  {
+    changeExposureClientValue.request.a = sceneHolder.params_.exposure_cube_markers;
 
-        int timeout = 2;
-        while (!changeExposureClient.call(changeExposureClientValue) && timeout--)
-        {
-          soft_delay(100);
-        };
-      }
+    int timeout = 2;
+    while (!changeExposureClient.call(changeExposureClientValue) && timeout--)
+    {
+      soft_delay(100);
+    };
+  }
 }
 
 int calc_new_exposure(cv::Mat image, int area, int target_brightness, int current_exposure)

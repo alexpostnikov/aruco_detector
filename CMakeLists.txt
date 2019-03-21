@@ -26,7 +26,10 @@ find_package(OpenCV REQUIRED)
 find_package(Eigen3 REQUIRED)
 
 
-include_directories(${Eigen_INCLUDE_DIRS})
+include_directories(
+${Eigen_INCLUDE_DIRS}
+${OpenCV_INCLUDE_DIRS}
+)
 
 
 add_message_files(
@@ -37,6 +40,8 @@ add_message_files(
 
 add_service_files(
   FILES
+  SetSide.srv
+  ArucoRecalibrate.srv
   ChangeExposure.srv
 )
 
@@ -56,7 +61,7 @@ include_directories(
 
 # src/aruco_calibration.cpp src/aruco_initial_calibration.cpp
 
-add_executable(aruco_detector_node src/aruco_main.cpp src/aruco_marker_classes.cpp src/aruco_utils.cpp src/aruco_scene.cpp src/serialunix.cpp)
+add_executable(aruco_detector_node src/aruco_main.cpp src/aruco_marker_classes.cpp src/aruco_utils.cpp src/aruco_scene.cpp)
 
 add_executable(aruco_show_id_node src/aruco_show_id_node.cpp )
 
@@ -66,7 +71,7 @@ target_link_libraries (
 	${catkin_LIBRARIES} 
 	${OpenCV_LIBRARIES}
 	${Eigen_LIBRARIES}
-	serial
+
 )
 
 target_link_libraries (
@@ -74,7 +79,7 @@ target_link_libraries (
 	${catkin_LIBRARIES} 
 	${OpenCV_LIBRARIES}
 	${Eigen_LIBRARIES}
-	serial
+
 )
 
 add_dependencies(aruco_detector_node aruco_detector_generate_messages_cpp)

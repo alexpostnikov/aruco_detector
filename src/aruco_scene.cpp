@@ -11,6 +11,7 @@
 #include <tf/transform_broadcaster.h>
 #include <chrono>
 
+
 namespace enc = sensor_msgs::image_encodings;
 
 SceneHolder::SceneHolder()
@@ -53,6 +54,38 @@ SceneHolder::SceneHolder(ArucoDetectorParameters arucoParams)
   detectorParams_->perspectiveRemoveIgnoredMarginPerCell = 0.33;
   detectorParams_->polygonalApproxAccuracyRate = 0.1;
 }
+
+bool SceneHolder::recalibrate_cb(aruco_detector::ArucoRecalibrate::Request &req, aruco_detector::ArucoRecalibrate::Response &res)
+{
+  std::cout<< req.side << std::endl;
+  this->scene_status_ = Scene_statuses::search_static;
+  res.result = 1;
+  return 1;
+}
+
+bool SceneHolder::setSide_cb(aruco_detector::SetSide::Request &req, aruco_detector::SetSide::Response &res)
+{
+  std::cout<< req.side << std::endl;
+  if ((req.side == "g") || (req.side == "G")) //  || (req.side == std::string("green"))
+    { 
+      std::cout << "changing to green side" << std::endl;
+      this->params_.camera_position = this->params_.camera_position_green;
+      res.result = 1;
+      return 1;
+    }
+  else if ((req.side == "o") || (req.side == "O")) // || (req.side == std::string("orange"))
+    {
+      std::cout << "changing to orange side" << std::endl;
+      this->params_.camera_position = this->params_.camera_position_orange;
+      res.result = 1;
+      return 1;
+      // aruco_params.camera_position = aruco_params.camera_position_orange;
+    }
+  res.result = 0; 
+  return 0;
+  
+}
+
 
 void SceneHolder::imageCallback(const sensor_msgs::ImageConstPtr &original_image)
 {
@@ -285,8 +318,8 @@ void SceneHolder::showImages(bool is_draw_markers, bool is_draw_table_perspectiv
 
   Mat image_resized;
 
-  // resize(cv_ptr_->image, image_resized, Size(500, 500));
-  imshow("video", cv_ptr_->image);
+  resize(cv_ptr_->image, image_resized, Size(500, 300));
+  imshow("video", image_resized);
 
   char key = (char)waitKey(50);
   if (key == 'd')
@@ -321,20 +354,27 @@ void SceneHolder::calc_new_transform()
 
   for (auto static_marker : static_markers_)
   {
-    if ((static_marker.id_ == 5) && (!static_marker.is_visible_))
+    if (!static_marker.is_visible_)
     {
       counter_fails_static_detection++;
       readCamToMapTransform(ros::package::getPath("aruco_detector") + "/new_transform_from_cam_to_map.yml",
                             new_transform_from_cam_to_map_);
       return;
     }
-    if ((static_marker.id_ == 0) && (!static_marker.is_visible_))
-    {
-      counter_fails_static_detection++;
-      readCamToMapTransform(ros::package::getPath("aruco_detector") + "/new_transform_from_cam_to_map.yml",
-                            new_transform_from_cam_to_map_);
-      return;
-    }
+    // if ((static_marker.id_ == 5) && (!static_marker.is_visible_))
+    // {
+    //   counter_fails_static_detection++;
+    //   readCamToMapTransform(ros::package::getPath("aruco_detector") + "/new_transform_from_cam_to_map.yml",
+    //                         new_transform_from_cam_to_map_);
+    //   return;
+    // }
+    // if ((static_marker.id_ == 0) && (!static_marker.is_visible_))
+    // {
+    //   counter_fails_static_detection++;
+    //   readCamToMapTransform(ros::package::getPath("aruco_detector") + "/new_transform_from_cam_to_map.yml",
+    //                         new_transform_from_cam_to_map_);
+    //   return;
+    // }
   }
 
   vector<cv::Vec3d> PointCameraBase;
@@ -342,9 +382,9 @@ void SceneHolder::calc_new_transform()
 
   for (auto static_marker : static_markers_)
   {
-    if ((static_marker.is_visible_) && static_marker.id_ == 5)
+    if ((static_marker.is_visible_) && static_marker.id_ == params_.static_markers_ids[0])
       PointCameraBase[0] = static_marker.tvec_;
-    if ((static_marker.is_visible_) && static_marker.id_ == 0)
+    if ((static_marker.is_visible_) && static_marker.id_ == params_.static_markers_ids[1])
       PointCameraBase[1] = static_marker.tvec_;
   }
 

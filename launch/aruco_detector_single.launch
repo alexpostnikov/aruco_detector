@@ -1,7 +1,7 @@
 <launch>    
     <arg name="camera_format" default="4"/>
     <arg name="log_output" default="screen" />
-    <arg name="video_device" default="/dev/video1"   />
+    <arg name="video_device" default="/dev/video0"   />
     <arg name="serverIp" default="10.0.0.26"   />
     <arg name="side" default="green"/>
 
@@ -10,7 +10,7 @@
     <!-- <rosparam command="load" ns ="communication_aruco" file="$(find communication)/params/communication_params.yaml"/> -->
 
     <!-- ocam_usb_cam node -->
-    <!-- <node   pkg="ocam_usb_cam" 
+    <node   pkg="ocam_usb_cam" 
             type="ocam_usb_cam_node" 
             name="ocam_usb_cam_node" 
             required="true" 
@@ -18,7 +18,7 @@
             output="screen" >
             <param name="camera_format" value="$(arg camera_format)" />
 	        <param name="video_device" value="$(arg video_device)" />
-    </node> -->
+    </node>
 
     <!-- aruco detector node -->
     <node   pkg="aruco_detector" 

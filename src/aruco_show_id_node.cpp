@@ -1,34 +1,18 @@
 #include "ros/ros.h"
-//#include <boost/assign/list_of.hpp>
-
-#include <opencv2/line_descriptor.hpp>
-#include "opencv2/core/utility.hpp"
-#include "opencv2/features2d.hpp"
-#include "opencv2/highgui.hpp"
 
 #include <cv_bridge/cv_bridge.h>
-#include <geometry_msgs/Pose.h>
-#include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/image_encodings.h>
-#include <tf/LinearMath/Matrix3x3.h>
-#include <tf/transform_broadcaster.h>
-#include <visualization_msgs/Marker.h>
 
-#include <Eigen/Dense>
+
+
 #include <opencv2/aruco.hpp>
 
-#include <opencv2/calib3d.hpp>
+
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include <fstream>
-#include <iostream>
-#include <iterator>
-#include <string>
-#include "std_msgs/String.h"
 
-#include <chrono>
 namespace enc = sensor_msgs::image_encodings;
 
 cv::Ptr<cv::aruco::Dictionary> dictionary = cv::aruco::getPredefinedDictionary(8);
@@ -51,7 +35,6 @@ void imageCallback(const sensor_msgs::ImageConstPtr &original_image)
 
 int main(int argc, char **argv)
 {
-  
   detectorParams->adaptiveThreshWinSizeMin = 3;
   detectorParams->adaptiveThreshWinSizeMax = 23;
   detectorParams->adaptiveThreshWinSizeStep = 13;
