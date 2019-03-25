@@ -553,27 +553,53 @@ void SceneHolder::publish(ros::Publisher sber_robot_pose1, ros::Publisher sber_r
     msg.header.frame_id = "map";
     msg.header.stamp = timestamp_;
   }
-  for (int i = 0; i < 4; i++)
+  
+  if ((arucoCubes_[0].markers_.size() != 0))
   {
-    {
-      if ((arucoCubes_[i].markers_.size() == 0))
-      {
-        robot_pose_msg[i].pose.position.x = std::numeric_limits<double>::infinity();
-        robot_pose_msg[i].pose.position.y = std::numeric_limits<double>::infinity();
-        robot_pose_msg[i].pose.position.z = std::numeric_limits<double>::infinity();
-        robot_pose_msg[i].pose.orientation.w = 1;
-      }
-      else
-      {
-        robot_pose_msg[i] = calc_msg_from_position(arucoCubes_[i], new_transform_from_cam_to_map_, true);
-      }
-    }
+    robot_pose_msg[0] = calc_msg_from_position(arucoCubes_[0], new_transform_from_cam_to_map_, true);
+    sber_robot_pose1.publish(robot_pose_msg[0]);
   }
-  sber_robot_pose1.publish(robot_pose_msg[0]);
-  sber_robot_pose2.publish(robot_pose_msg[1]);
-  enemy_robot_pose1.publish(robot_pose_msg[2]);
-  enemy_robot_pose2.publish(robot_pose_msg[3]);
+  
+  if ((arucoCubes_[1].markers_.size() != 0))
+  {
+    robot_pose_msg[1] = calc_msg_from_position(arucoCubes_[1], new_transform_from_cam_to_map_, true);
+    sber_robot_pose2.publish(robot_pose_msg[1]);
+  }
+  if ((arucoCubes_[2].markers_.size() != 0))
+  {
+    robot_pose_msg[2] = calc_msg_from_position(arucoCubes_[2], new_transform_from_cam_to_map_, true);
+    enemy_robot_pose1.publish(robot_pose_msg[2]);
+  }
+  
+  if ((arucoCubes_[3].markers_.size() != 0))
+  {
+    robot_pose_msg[3] = calc_msg_from_position(arucoCubes_[3], new_transform_from_cam_to_map_, true);
+    enemy_robot_pose2.publish(robot_pose_msg[3]);
+  }
 }
+  
+//   for (int i = 0; i < 4; i++)
+//   {
+//     {
+//       if ((arucoCubes_[i].markers_.size() == 0))
+//       {
+//         continue;
+//         // robot_pose_msg[i].pose.position.x = std::numeric_limits<double>::infinity();
+//         // robot_pose_msg[i].pose.position.y = std::numeric_limits<double>::infinity();
+//         // robot_pose_msg[i].pose.position.z = std::numeric_limits<double>::infinity();
+//         // robot_pose_msg[i].pose.orientation.w = 1;
+//       }
+//       else
+//       {
+//         robot_pose_msg[i] = calc_msg_from_position(arucoCubes_[i], new_transform_from_cam_to_map_, true);
+//       }
+//     }
+//   }
+//   sber_robot_pose1.publish(robot_pose_msg[0]);
+//   sber_robot_pose2.publish(robot_pose_msg[1]);
+//   enemy_robot_pose1.publish(robot_pose_msg[2]);
+//   enemy_robot_pose2.publish(robot_pose_msg[3]);
+// }
 
 void SceneHolder::ShowTablePerspevtive()
 {
@@ -701,23 +727,26 @@ void check_intersection_and_extend(vector<Rect> &rects, Rect rect)
   // check current rect with all previous rects -> if intersection-> expand else add to vector
   uint8_t i = 0;
   bool do_append = true;
+  
+  // for each rect in rects
   while (i < rects.size())
   {
+    // if there  is intersecion and new is not fully inside 
     if ( ((rects[i] & rect).area() > 0) & ((rects[i] & rect).area() < rect.area()) )
     {
       rects[i] = (rects[i] | rect);
       rect = rects[i];
       do_append = false;
       i = 0;
+      continue;
     }
-    else
+    if ( ((rects[i] & rect).area() > 0) & ((rects[i] & rect).area() ==  rect.area()) )
     {
-      i += 1;
-      if ((rects[i] & rect).area() < rect.area())
-      {
-        do_append = false;
-      }
+      
+      // if ((rects[i] & rect).area() < rect.area())
+      do_append = false;
     }
+    i += 1;
   }
   if (do_append)
     rects.push_back(rect);
@@ -725,6 +754,7 @@ void check_intersection_and_extend(vector<Rect> &rects, Rect rect)
 
 void preProcessImageBrighnessMask(Mat &image, vector<Rect> &rects, vector<Mat> &candidates, int brightness_treshold)
 {
+  rects.clear();
   static cv::Ptr<aruco::DetectorParameters> detectorParams = cv::aruco::DetectorParameters::create();
   std::vector<int> ids;
   std::vector<std::vector<cv::Point2f>> corners;
