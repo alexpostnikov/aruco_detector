@@ -141,6 +141,7 @@ bool MarkerCube::calcCenter(cv::Mat cameraMatrix, cv::Mat distCoeffs, cv::Mat ne
                     marker.id_) != params.marker_ids["small_enemy_ids"].end())))
     {
       z_goal = z_goal_enemy_robots;
+      z_goal_bot = z_goal - params.len_of_cube_markers;
     }
     // ------------------------------------------------------------------------------------
 
@@ -151,9 +152,12 @@ bool MarkerCube::calcCenter(cv::Mat cameraMatrix, cv::Mat distCoeffs, cv::Mat ne
                     marker.id_) != params.marker_ids["big_sber_cube_ids"].end())))
     {
       z_goal = z_goal_sber_robots;
+      z_goal_bot = z_goal - params.width_marker;
     }
     // ------------------------------------------------------------------------------------
 
+
+    //  top side markers
     if ((std::find(params.marker_ids["small_top_side_ids"].begin(), params.marker_ids["small_top_side_ids"].end(),
                    marker.id_) != params.marker_ids["small_top_side_ids"].end()) ||
         ((std::find(params.marker_ids["big_top_side_ids"].begin(), params.marker_ids["big_top_side_ids"].end(),
@@ -161,7 +165,7 @@ bool MarkerCube::calcCenter(cv::Mat cameraMatrix, cv::Mat distCoeffs, cv::Mat ne
     {
       z_goal = z_goal_top_side_markers;
     }
-    z_goal_bot = z_goal - params.width_marker;
+    // ------------------------------------------------------------------------------------
 
     if (params.use_top_line_marker)
     {
@@ -186,126 +190,36 @@ bool MarkerCube::calcCenter(cv::Mat cameraMatrix, cv::Mat distCoeffs, cv::Mat ne
       }
     }
 
-    // if (marker.id_ == 46)
-    // {
-    // 	for (uint8_t i = 2; i < 4; i++)
-    // 	{
-    // 		Mat vec_second = (Mat_<double>(3, 1) << marker_undist_corners[i].x, marker_undist_corners[i].y, 1);
-    // 		vec_second = cameraMatrix.inv() * vec_second;
-    // 		Mat second_corner = vec_second;
-    // 		move_and_norm_vector(second_corner, new_transform_from_cam_to_map, params.camera_position,
-    // z_goal_sber_robots);
-    // 		corners_in_map_coords.push_back(second_corner);
-    // 	}
-    // }
-    // /*** TOP SIDE MARKER ***/
-    // else if ((marker.id_ == 2) || (marker.id_ == 1) || (marker.id_ == 3) || (marker.id_ == 6) || (marker.id_ == 8))
-    // {
-    // 	for (uint8_t i = 0; i < 2; i++)
-    // 	{
-    // 		Mat vec_second = (Mat_<double>(3, 1) << marker_undist_corners[i].x, marker_undist_corners[i].y, 1);
-    // 		vec_second = cameraMatrix.inv() * vec_second;
-    // 		Mat second_corner = vec_second;
-    // 		move_and_norm_vector(second_corner, new_transform_from_cam_to_map, params.camera_position,
-    // 												 z_goal_top_side_markers);
-    // 		corners_in_map_coords.push_back(second_corner);
-    // 	}
-    // }
-
-    // else if ((marker.id_ == 4) || (marker.id_ == 7))
-    // {
-    // 	for (uint8_t i = 0; i < 2; i++)
-    // 	{
-    // 		Mat vec_second = (Mat_<double>(3, 1) << marker_undist_corners[i].x, marker_undist_corners[i].y, 1);
-    // 		vec_second = cameraMatrix.inv() * vec_second;
-    // 		Mat second_corner = vec_second;
-    // 		move_and_norm_vector(second_corner, new_transform_from_cam_to_map, params.camera_position,
-    // 												 z_goal_top_side_enemys);
-    // 		corners_in_map_coords.push_back(second_corner);
-    // 	}
-    // }
-    // /*** NORMAL MARKERS ***/
-    // else
-    // {
-    // 	for (uint8_t i = 0; i < 2; i++)
-    // 	{
-    // 		Mat vec_second = (Mat_<double>(3, 1) << marker_undist_corners[i].x, marker_undist_corners[i].y, 1);
-    // 		vec_second = cameraMatrix.inv() * vec_second;
-    // 		Mat second_corner = vec_second;
-    // 		// if enemy robot
-    // 		if ((marker.id_ == params.big_enemy_ids[0]) || (marker.id_ == params.big_enemy_ids[1]) ||
-    // 				(marker.id_ == params.big_enemy_ids[2]) || (marker.id_ == params.big_enemy_ids[3]) ||
-    // 				(marker.id_ == params.small_enemy_ids[0]) || (marker.id_ == params.small_enemy_ids[1]) ||
-    // 				(marker.id_ == params.small_enemy_ids[2]) || (marker.id_ == params.small_enemy_ids[3]))
-    // 		{
-    // 			move_and_norm_vector(second_corner, new_transform_from_cam_to_map, params.camera_position,
-    // 													 z_goal_enemy_robots);
-    // 		}
-    // 		else
-    // 		// if sber robot
-    // 		{
-    // 			move_and_norm_vector(second_corner, new_transform_from_cam_to_map, params.camera_position,
-    // 													 z_goal_sber_robots);
-    // 		}
-    // 		corners_in_map_coords.push_back(second_corner);
-    // 	}
-    // }
-
     // calc average from all corners to get real marker center
     float angle = 0;
-    // if (0)
+  
+    if (corners_in_map_coords.size() > 2)
+    {
+      average_position =
+          (Mat_<double>(2, 1) << (corners_in_map_coords[0].at<double>(0, 0) +
+                                  corners_in_map_coords[1].at<double>(0, 0)) /
+                                      2,
+            (corners_in_map_coords[0].at<double>(1, 0) + corners_in_map_coords[1].at<double>(1, 0)) / 2);
+      cv::Vec3d first_tvec = cv::Vec3d(average_position.at<double>(0, 0), average_position.at<double>(1, 0), 0);
+      // marker.setTvec(cv::Vec3d(average_position.at<double>(0, 0), average_position.at<double>(1, 0), 0));
+      float dot = corners_in_map_coords[0].at<double>(0, 0) - corners_in_map_coords[1].at<double>(0, 0);
+      float det = corners_in_map_coords[0].at<double>(1, 0) - corners_in_map_coords[1].at<double>(1, 0);
+      float first_angle = atan2(dot, det);
+
+      average_position =
+          (Mat_<double>(2, 1) << (corners_in_map_coords[2].at<double>(0, 0) +
+                                  corners_in_map_coords[3].at<double>(0, 0)) /
+                                      2,
+            (corners_in_map_coords[2].at<double>(1, 0) + corners_in_map_coords[3].at<double>(1, 0)) / 2);
+      cv::Vec3d second_tvec = cv::Vec3d(average_position.at<double>(0, 0), average_position.at<double>(1, 0), 0);
       
-    //   {
-    //     {
-    //       average_position = (Mat_<double>(2, 1) << (corners_in_map_coords[0].at<double>(0, 0) +
-    //                                                  corners_in_map_coords[1].at<double>(0, 0) +
-    //                                                  corners_in_map_coords[2].at<double>(0, 0) +
-    //                                                  corners_in_map_coords[3].at<double>(0, 0)) /
-    //                                                     4,
-    //                           (corners_in_map_coords[0].at<double>(1, 0) + corners_in_map_coords[1].at<double>(1, 0) +
-    //                            corners_in_map_coords[0].at<double>(2, 0) + corners_in_map_coords[1].at<double>(3, 0)) /
-    //                               4);
-    //       marker.setTvec(cv::Vec3d(average_position.at<double>(0, 0), average_position.at<double>(1, 0), 0));
-    //       float dot = corners_in_map_coords[0].at<double>(0, 0) - corners_in_map_coords[1].at<double>(0, 0);
-    //       float det = corners_in_map_coords[0].at<double>(1, 0) - corners_in_map_coords[1].at<double>(1, 0);
-    //       angle = atan2(dot, det);
-
-    //       float dot1 = corners_in_map_coords[0].at<double>(0, 0) - corners_in_map_coords[1].at<double>(0, 0);
-    //       float det1 = corners_in_map_coords[0].at<double>(1, 0) - corners_in_map_coords[1].at<double>(1, 0);
-    //       float angle1 = atan2(dot1, det1);
-    //       if (abs(angle - angle1) < 0.2)
-    //       {
-    //         angle = (angle + angle1) / 2;
-    //       }
-    //     }
-    //   }
-      if (corners_in_map_coords.size() > 2)
-      {
-        average_position =
-            (Mat_<double>(2, 1) << (corners_in_map_coords[0].at<double>(0, 0) +
-                                    corners_in_map_coords[1].at<double>(0, 0)) /
-                                       2,
-             (corners_in_map_coords[0].at<double>(1, 0) + corners_in_map_coords[1].at<double>(1, 0)) / 2);
-        cv::Vec3d first_tvec = cv::Vec3d(average_position.at<double>(0, 0), average_position.at<double>(1, 0), 0);
-        // marker.setTvec(cv::Vec3d(average_position.at<double>(0, 0), average_position.at<double>(1, 0), 0));
-        float dot = corners_in_map_coords[0].at<double>(0, 0) - corners_in_map_coords[1].at<double>(0, 0);
-        float det = corners_in_map_coords[0].at<double>(1, 0) - corners_in_map_coords[1].at<double>(1, 0);
-        float first_angle = atan2(dot, det);
-
-        average_position =
-            (Mat_<double>(2, 1) << (corners_in_map_coords[2].at<double>(0, 0) +
-                                    corners_in_map_coords[3].at<double>(0, 0)) /
-                                       2,
-             (corners_in_map_coords[2].at<double>(1, 0) + corners_in_map_coords[3].at<double>(1, 0)) / 2);
-        cv::Vec3d second_tvec = cv::Vec3d(average_position.at<double>(0, 0), average_position.at<double>(1, 0), 0);
-        
-        dot = corners_in_map_coords[2].at<double>(0, 0) - corners_in_map_coords[3].at<double>(0, 0);
-        det = corners_in_map_coords[2].at<double>(1, 0) - corners_in_map_coords[3].at<double>(1, 0);
-        float second_angle = atan2(dot, det);
-        cv::Vec3d result_tvec = cv::Vec3d((first_tvec[0]+second_tvec[0])/2.0, (first_tvec[1]+second_tvec[1])/2.0, 0);
-        marker.setTvec(result_tvec);
-        angle = (first_angle + second_angle)/2.0;
-      }
+      dot = corners_in_map_coords[2].at<double>(0, 0) - corners_in_map_coords[3].at<double>(0, 0);
+      det = corners_in_map_coords[2].at<double>(1, 0) - corners_in_map_coords[3].at<double>(1, 0);
+      float second_angle = atan2(dot, det);
+      cv::Vec3d result_tvec = cv::Vec3d((first_tvec[0]+second_tvec[0])/2.0, (first_tvec[1]+second_tvec[1])/2.0, 0);
+      marker.setTvec(result_tvec);
+      angle = (first_angle + second_angle)/2.0;
+    }
 
     if (corners_in_map_coords.size() == 2)
     {
