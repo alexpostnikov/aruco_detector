@@ -33,10 +33,7 @@ markers:
     small_enemy_ids: "36, 35, 34, 33, 4, 99, 99 , 99",
   }
 # by dafault all markers ARE NORMAL
-<<<<<<< HEAD
-markers_rotation: {normal: "99", clockwise: "99", counterClockwise: "99", upSide: "46" } 
-# 43 33
-=======
+
 markers_rotation: {normal: "99", clockwise: "99", counterClockwise: "99", upSide: "99" } 
 
 
@@ -46,4 +43,3 @@ markers_rotation: {normal: "99", clockwise: "99", counterClockwise: "99", upSide
 # big_sber_ids: [39, 42, 40, 44, 6, 8, 99, 99]
 # big_enemy_ids: [43, 45, 31, 41, 7, 99, 99, 99]
 # small_enemy_ids: [36, 35, 34, 33, 4, 99, 99, 99]
->>>>>>> 47b0fb58c267305540aa2e57a7053ee240724ec3
