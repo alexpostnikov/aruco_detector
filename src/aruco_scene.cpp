@@ -10,7 +10,7 @@
 
 #include <tf/transform_broadcaster.h>
 #include <chrono>
-
+#include <string>
 
 namespace enc = sensor_msgs::image_encodings;
 
@@ -35,6 +35,7 @@ SceneHolder::SceneHolder(ArucoDetectorParameters arucoParams)
     for (auto &marker : arucoCube.markers_)
     {
       marker.marker_size_ = params_.len_of_cube_markers;
+
     }
   }
   arucoCubes_[0].cube_side_qr_id_ = params_.big_sber_ids;
@@ -97,6 +98,7 @@ void SceneHolder::imageCallback(const sensor_msgs::ImageConstPtr &original_image
       this->cv_ptr_->image = cv::Scalar::all(255) - this->cv_ptr_->image;
       // GaussianBlur(this->cv_ptr_->image, this->cv_ptr_->image, Size(3,3),0,0);
     }
+    rotate(this->cv_ptr_->image, this->cv_ptr_->image, 1); 
   }
   catch (cv_bridge::Exception &e)
   {
@@ -556,6 +558,7 @@ void SceneHolder::publish(ros::Publisher sber_robot_pose1, ros::Publisher sber_r
   
   if ((arucoCubes_[0].markers_.size() != 0))
   {
+<<<<<<< Updated upstream
     robot_pose_msg[0] = calc_msg_from_position(arucoCubes_[0], new_transform_from_cam_to_map_, true);
     sber_robot_pose1.publish(robot_pose_msg[0]);
   }
@@ -575,6 +578,21 @@ void SceneHolder::publish(ros::Publisher sber_robot_pose1, ros::Publisher sber_r
   {
     robot_pose_msg[3] = calc_msg_from_position(arucoCubes_[3], new_transform_from_cam_to_map_, true);
     enemy_robot_pose2.publish(robot_pose_msg[3]);
+=======
+    {
+      if ((arucoCubes_[i].markers_.size() == 0))
+      {
+        robot_pose_msg[i].pose.position.x =-1;// std::numeric_limits<double>::infinity();
+        robot_pose_msg[i].pose.position.y = -1;//std::numeric_limits<double>::infinity();
+        robot_pose_msg[i].pose.position.z = 0;//std::numeric_limits<double>::infinity();
+        robot_pose_msg[i].pose.orientation.w = 1;
+      }
+      else
+      {
+        robot_pose_msg[i] = calc_msg_from_position(arucoCubes_[i], new_transform_from_cam_to_map_, true);
+      }
+    }
+>>>>>>> Stashed changes
   }
 }
   
@@ -603,14 +621,14 @@ void SceneHolder::publish(ros::Publisher sber_robot_pose1, ros::Publisher sber_r
 
 void SceneHolder::ShowTablePerspevtive()
 {
-  Mat image = cv_ptr_->image;
+  Mat image = cv_ptr_->image.clone();
   vector<Point3f> PointsInMapCoordsSystem;
 
   vector<Point2f> PointsInPixels;
 
-  if (transform_from_cam_to_map_.cols != 4)
+  if (new_transform_from_cam_to_map_.cols != 4)
     return;
-  Affine3d aff(transform_from_cam_to_map_);
+  Affine3d aff(new_transform_from_cam_to_map_);
   Affine3d affInv = aff.inv();
   vector<Vec3f> PointsInCamCoordsSystem;
   vector<Point3f> zeroPoint;
@@ -704,6 +722,7 @@ void SceneHolder::ShowTablePerspevtive()
   line(image, vecPointsInPixels[1], vecPointsInPixels[2], color, 2);
   line(image, vecPointsInPixels[2], vecPointsInPixels[3], color, 2);
   line(image, vecPointsInPixels[3], vecPointsInPixels[4], color, 2);
+  resize(image,image, Size(), 0.3, 0.3, INTER_CUBIC);
   imshow("table Perspective", image);
 }
 

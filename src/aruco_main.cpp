@@ -155,7 +155,7 @@ void switchToCubeFinding(SceneHolder sceneHolder, ros::ServiceClient changeExpos
   if (prev_status != sceneHolder.scene_status_)
   {
     changeExposureClientValue.request.a = sceneHolder.params_.exposure_cube_markers;
-
+    std::cout<< "sceneHolder.params_.exposure_cube_markers " << sceneHolder.params_.exposure_cube_markers;
     int timeout = 2;
     while (!changeExposureClient.call(changeExposureClientValue) && timeout--)
     {

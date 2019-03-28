@@ -414,8 +414,8 @@ Mat new_allocation_maps(Point3d marker1_cam_base, Point3d marker2_cam_base, std:
 {
 
 
-  Point3d marker1_map_base(0.07, 0.07, 0.06);
-  Point3d marker2_map_base(3 - 0.07, 0.07, 0.06);
+  Point3d marker1_map_base(0.10, 0.05, 0.04);
+  Point3d marker2_map_base(3 - 0.10, 0.05, 0.04);
   Point3d left_marker, right_marker;
   if (marker1_cam_base.x < marker2_cam_base.x)
   {
