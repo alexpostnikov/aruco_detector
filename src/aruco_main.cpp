@@ -74,6 +74,7 @@ int main(int argc, char **argv)
   ros::ServiceServer service_recalib = n.advertiseService("ArucoRecalibrate", &SceneHolder::recalibrate_cb, &sceneHolder); //("SetSide", setSide_cb);
   ros::ServiceClient changeExposureClient = n.serviceClient<aruco_detector::ChangeExposure>("ChangeExposure");
   ros::Subscriber sub = n.subscribe("ocam/image_raw", 1, &SceneHolder::imageCallback, &sceneHolder);
+  ros::Publisher info_to_gui = n.advertise<std_msgs::String> ("/aruco/info_to_gui", 30);
   ros::Publisher enemy_robot_pose1 = n.advertise<geometry_msgs::PoseStamped>("/enemy_robot1/aruco", 30);
   ros::Publisher enemy_robot_pose2 = n.advertise<geometry_msgs::PoseStamped>("/enemy_robot2/aruco", 30);
   ros::Publisher sber_robot_pose1 = n.advertise<geometry_msgs::PoseStamped>("/big_robot/aruco", 30);
@@ -95,10 +96,13 @@ int main(int argc, char **argv)
   ros::Rate loop_rate(30);
   Scene_statuses::Scene_status prev_status = Scene_statuses::search_static;
   sceneHolder.params_ = aruco_params;
+  std_msgs::String message;
+
   while (ros::ok())
   {
     if (sceneHolder.cv_ptr_ != NULL)
     {
+      std_msgs::String message;
       sceneHolder.findMarkers();
 
       sceneHolder.allocateStaticMarkers();
@@ -121,6 +125,17 @@ int main(int argc, char **argv)
 
       prev_status = sceneHolder.scene_status_;
 
+      if (sceneHolder.scene_status_ == Scene_statuses::search_static)
+        { message.data += std::string("{Scene_statuses: search_static}"); }
+      else 
+        {message.data += std::string("{Scene_statuses: search_cubes}");}
+
+      message.data += std::string("{calibation_status: "+ std::to_string(sceneHolder.calibration_status_) + "}");
+      if (sceneHolder.params_.camera_position == sceneHolder.params_.camera_position_green)
+        {message.data += std::string("{camera_position: yellow}");}
+      else 
+        {{message.data += std::string("{camera_position: violet}");}}
+      info_to_gui.publish(message);
       sceneHolder.clearOldData();
     }
 

@@ -11,6 +11,10 @@
 #include <tf/transform_broadcaster.h>
 #include <chrono>
 #include <string>
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 
 namespace enc = sensor_msgs::image_encodings;
 
@@ -313,8 +317,10 @@ void SceneHolder::showImages(bool is_draw_markers, bool is_draw_table_perspectiv
     cv::aruco::drawDetectedMarkers(cv_ptr_->image, corners_vector, ids_vector);
   }
 
+  
   if ((new_transform_from_cam_to_map_.cols == 4) && (is_draw_table_perspective))
   {
+    // ROS_WARN_STREAM_THROTTLE(1, "inside");
     ShowTablePerspevtive();
   }
 
@@ -612,6 +618,11 @@ void SceneHolder::ShowTablePerspevtive()
 
   vector<Point2f> PointsInPixels;
 
+<<<<<<< Updated upstream
+=======
+
+  
+>>>>>>> Stashed changes
   if (new_transform_from_cam_to_map_.cols != 4)
     return;
   Affine3d aff(new_transform_from_cam_to_map_);
@@ -708,7 +719,12 @@ void SceneHolder::ShowTablePerspevtive()
   line(image, vecPointsInPixels[1], vecPointsInPixels[2], color, 2);
   line(image, vecPointsInPixels[2], vecPointsInPixels[3], color, 2);
   line(image, vecPointsInPixels[3], vecPointsInPixels[4], color, 2);
+<<<<<<< Updated upstream
   resize(image,image, Size(), 0.3, 0.3, INTER_CUBIC);
+=======
+
+  resize(image,image, Size(), 0.5, 0.5, INTER_CUBIC);
+>>>>>>> Stashed changes
   imshow("table Perspective", image);
 }
 
@@ -745,6 +761,7 @@ void check_intersection_and_extend(vector<Rect> &rects, Rect rect)
       i = 0;
       continue;
     }
+
     if ( ((rects[i] & rect).area() > 0) & ((rects[i] & rect).area() ==  rect.area()) )
     {
       
