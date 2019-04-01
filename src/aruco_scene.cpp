@@ -558,7 +558,7 @@ void SceneHolder::publish(ros::Publisher sber_robot_pose1, ros::Publisher sber_r
   
   if ((arucoCubes_[0].markers_.size() != 0))
   {
-<<<<<<< Updated upstream
+
     robot_pose_msg[0] = calc_msg_from_position(arucoCubes_[0], new_transform_from_cam_to_map_, true);
     sber_robot_pose1.publish(robot_pose_msg[0]);
   }
@@ -578,21 +578,7 @@ void SceneHolder::publish(ros::Publisher sber_robot_pose1, ros::Publisher sber_r
   {
     robot_pose_msg[3] = calc_msg_from_position(arucoCubes_[3], new_transform_from_cam_to_map_, true);
     enemy_robot_pose2.publish(robot_pose_msg[3]);
-=======
-    {
-      if ((arucoCubes_[i].markers_.size() == 0))
-      {
-        robot_pose_msg[i].pose.position.x =-1;// std::numeric_limits<double>::infinity();
-        robot_pose_msg[i].pose.position.y = -1;//std::numeric_limits<double>::infinity();
-        robot_pose_msg[i].pose.position.z = 0;//std::numeric_limits<double>::infinity();
-        robot_pose_msg[i].pose.orientation.w = 1;
-      }
-      else
-      {
-        robot_pose_msg[i] = calc_msg_from_position(arucoCubes_[i], new_transform_from_cam_to_map_, true);
-      }
-    }
->>>>>>> Stashed changes
+
   }
 }
   

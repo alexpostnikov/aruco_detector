@@ -8,7 +8,7 @@
 
     <rosparam param="side" subst_value="True">$(arg side)</rosparam>
     <rosparam command="load" file="$(find aruco_detector)/aruco_detector_params.yml" />
-    <!-- <rosparam command="load" ns ="communication_aruco" file="$(find communication)/params/communication_params.yaml"/> -->
+    <rosparam command="load" ns ="communication_aruco" file="$(find communication)/params/communication_params.yaml"/>
 
     <!-- ocam_usb_cam node -->
 
@@ -21,7 +21,7 @@
             <param name="camera_format" value="$(arg camera_format)" />
 	        <param name="video_device" value="$(arg video_device)" />
     </node>
-    <node pkg="communication2" type="cus_client.py" name="cus_client1" required="false" respawn="true" respawn_delay="3" args="10.0.0.23"/>
+    <!--  <node pkg="communication2" type="cus_client.py" name="cus_client1" required="false" respawn="true" respawn_delay="3" args="10.0.0.23"/> -->
     <!-- node pkg="communication2" type="cus_client.py" name="cus_client2" required="false" respawn="true" respawn_delay="3" args="127.0.0.1"/ -->
 
     <!-- aruco detector node -->
@@ -30,15 +30,14 @@
             name ="aruco_detector_node"
 	    required = "True" 
             output="screen" >
-
     </node>
 
     <!--  communication node. Sending aruco data over tcp -->
-    <!-- <node   pkg="communication"
+    <node   pkg="communication"
             type="communication_aruco" 
 	    output="screen"
             name="communication_aruco" >
             <param name="serverIp" value="$(arg serverIp)" />
-    </node> -->
+    </node>
 
 </launch>

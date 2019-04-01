@@ -103,8 +103,8 @@ bool MarkerCube::calcCenter(cv::Mat cameraMatrix, cv::Mat distCoeffs, cv::Mat ne
     // TODO: constants? from param server?
     std::vector<Mat> corners_in_map_coords;
     float z_goal_sber_robots = 0.421 - params.camera_position[2];
-    float z_goal_enemy_robots = 0.28 - params.camera_position[2];
-    float z_goal_top_side_markers = 0.34 - params.camera_position[2];
+    float z_goal_enemy_robots = 0.507 - params.camera_position[2];
+    float z_goal_top_side_markers = 0.44 - params.camera_position[2];
     // float z_goal_top_side_enemys = 0.28 + 8 - params.camera_position[2];
     std::vector<int> top_corners_ids_to_use = { 0, 1 };
     std::vector<int> bottom_corners_ids_to_use = { 3, 2 };
@@ -141,6 +141,7 @@ bool MarkerCube::calcCenter(cv::Mat cameraMatrix, cv::Mat distCoeffs, cv::Mat ne
                     marker.id_) != params.marker_ids["small_enemy_ids"].end())))
     {
       z_goal = z_goal_enemy_robots;
+      // std::cout<< "z_goal "<< z_goal << " id " <<  marker.id_<<std::endl;
       z_goal_bot = z_goal - params.len_of_cube_markers;
     }
     // ------------------------------------------------------------------------------------
