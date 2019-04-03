@@ -104,7 +104,7 @@ bool MarkerCube::calcCenter(cv::Mat cameraMatrix, cv::Mat distCoeffs, cv::Mat ne
     std::vector<Mat> corners_in_map_coords;
     float z_goal_sber_robots = 0.421 - params.camera_position[2];
     float z_goal_enemy_robots = 0.507 - params.camera_position[2];
-    float z_goal_top_side_markers = 0.44 - params.camera_position[2];
+    float z_goal_top_side_markers = 0.35 - params.camera_position[2];
     // float z_goal_top_side_enemys = 0.28 + 8 - params.camera_position[2];
     std::vector<int> top_corners_ids_to_use = { 0, 1 };
     std::vector<int> bottom_corners_ids_to_use = { 3, 2 };
@@ -238,9 +238,9 @@ bool MarkerCube::calcCenter(cv::Mat cameraMatrix, cv::Mat distCoeffs, cv::Mat ne
 
     if ((marker.id_ == 2))
     {
-      Vec3d angle_vec(0.0, 0.0, -(angle - 3.14));
-      marker.setRvec(angle_vec);
-      center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.02, -0.07, 0));
+      // Vec3d angle_vec(0.0, 0.0, -(angle - 3.14));
+      // marker.setRvec(angle_vec);
+      center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(-0.03, -0.07, 0));
     }
 
     else if ((marker.id_ == 8))

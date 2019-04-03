@@ -11,10 +11,6 @@
 #include <tf/transform_broadcaster.h>
 #include <chrono>
 #include <string>
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 
 namespace enc = sensor_msgs::image_encodings;
 
@@ -44,6 +40,7 @@ SceneHolder::SceneHolder(ArucoDetectorParameters arucoParams)
   }
   arucoCubes_[0].cube_side_qr_id_ = params_.big_sber_ids;
   arucoCubes_[1].cube_side_qr_id_ = params_.small_sber_ids;
+  arucoCubes_[1].cube_side_qr_id_.insert(arucoCubes_[1].cube_side_qr_id_.end(), params_.small_top_side_ids.begin(), params_.small_top_side_ids.end() );
   arucoCubes_[2].cube_side_qr_id_ = params_.big_enemy_ids;
   arucoCubes_[3].cube_side_qr_id_ = params_.small_enemy_ids;
 
@@ -618,11 +615,6 @@ void SceneHolder::ShowTablePerspevtive()
 
   vector<Point2f> PointsInPixels;
 
-<<<<<<< Updated upstream
-=======
-
-  
->>>>>>> Stashed changes
   if (new_transform_from_cam_to_map_.cols != 4)
     return;
   Affine3d aff(new_transform_from_cam_to_map_);
@@ -719,12 +711,7 @@ void SceneHolder::ShowTablePerspevtive()
   line(image, vecPointsInPixels[1], vecPointsInPixels[2], color, 2);
   line(image, vecPointsInPixels[2], vecPointsInPixels[3], color, 2);
   line(image, vecPointsInPixels[3], vecPointsInPixels[4], color, 2);
-<<<<<<< Updated upstream
   resize(image,image, Size(), 0.3, 0.3, INTER_CUBIC);
-=======
-
-  resize(image,image, Size(), 0.5, 0.5, INTER_CUBIC);
->>>>>>> Stashed changes
   imshow("table Perspective", image);
 }
 
@@ -787,7 +774,8 @@ void preProcessImageBrighnessMask(Mat &image, vector<Rect> &rects, vector<Mat> &
   int devision_coeff = 5;
   resize(roi, roi, Size(roi.cols / devision_coeff, roi.rows / devision_coeff));
 
-  int rect_size = 7;
+  uint8_t rect_size = 7;
+  
   // for each pixel, if brighter than treshold -> create rects with the brightest areas
   for (uint8_t i = 0; i < roi.rows - 1; i++)
   {
@@ -800,24 +788,30 @@ void preProcessImageBrighnessMask(Mat &image, vector<Rect> &rects, vector<Mat> &
         int i_min;
         ((i - rect_size) > 0) ? i_min = i - rect_size : i_min = 0;
 
+        // ROS_WARN_STREAM_THROTTLE(1, roi.size);
         int j_max;
-        ((j + rect_size) > roi.rows) ? j_max = j + rect_size : j_max = roi.rows;
+        ((j + rect_size) < roi.cols) ? j_max = j + rect_size : j_max = roi.cols;
         int i_max;
-        ((i + rect_size) > roi.cols) ? i_max = i + rect_size : i_max = roi.cols;
+        ((i + rect_size) < roi.rows) ? i_max = i + rect_size : i_max = roi.rows;
+
+        
         check_intersection_and_extend(rects, Rect(Point((j_min)*devision_coeff, (i_min)*devision_coeff),
                                                   Point((j_max)*devision_coeff, (i_max)*devision_coeff)));
       }
   }
-
+  // std::cout << " "<< std::endl;
   for (auto &rect : rects)
   {
     rect = rect & (Rect(0, 0, image.cols - 1, image.rows - 1));
     if (rect.width > 0)
     {
       candidates.push_back(image(rect));
+      // std::cout << "x "<<rect.x <<" y "<<rect.x << " h "<<rect.height <<" w "<< rect.width <<" "<< std::endl;
       cv::rectangle(image, rect, Scalar(125), 10);
     }
   }
+  // imshow("small image", image);
+  // waitKey(10);
 }
 
 void SceneHolder::saveStaticMarkersPosition()
