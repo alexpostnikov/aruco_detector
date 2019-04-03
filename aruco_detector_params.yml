@@ -25,10 +25,10 @@ camera_position_orange: [1.6, 1.95, 0.97]
 max_missed_static_markers: 20
 markers:
   {
-    # small_sber_cube_ids: "46, 49, 48, 47",
     small_sber_cube_ids: "46, 49, 48, 47",
+    # small_sber_cube_ids: "99, 99, 99, 99",
     big_sber_cube_ids: "39, 42, 40, 44",
-    small_top_side_ids: "1,2,3",
+    small_top_side_ids: "1,2,0",
     big_enemy_ids: "43, 45, 31, 41, 7, 99, 99, 99",
     small_enemy_ids: "36, 35, 34, 33, 4, 99, 99 , 99",
   }

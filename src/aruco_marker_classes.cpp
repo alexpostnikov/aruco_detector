@@ -259,9 +259,9 @@ bool MarkerCube::calcCenter(cv::Mat cameraMatrix, cv::Mat distCoeffs, cv::Mat ne
 
     else if ((marker.id_ == 1))
     {
-      Vec3d angle_vec(0.0, 0.0, -(angle - 3.14));
+      Vec3d angle_vec(0.0, 0.0, (angle - 3.14));
       marker.setRvec(angle_vec);
-      center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.03, 0.07, 0));
+      center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.07, -0.02, 0));
     }
 
     else if (marker.id_ == 3)
