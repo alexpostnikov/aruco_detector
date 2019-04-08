@@ -102,7 +102,7 @@ bool MarkerCube::calcCenter(cv::Mat cameraMatrix, cv::Mat distCoeffs, cv::Mat ne
 
     // TODO: constants? from param server?
     std::vector<Mat> corners_in_map_coords;
-    std::cout << params.markers_heights[std::to_string(marker.id_)]<< std::endl;
+    // std::cout << params.markers_heights[std::to_string(marker.id_)]<< std::endl;
     float z_goal = params.markers_heights[std::to_string(marker.id_)] - params.camera_position[2];
     float z_goal_bot = z_goal - params.width_marker;
     // float z_goal_sber_robots = 0.421 - params.camera_position[2];
