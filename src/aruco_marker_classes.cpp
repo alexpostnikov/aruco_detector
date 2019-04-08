@@ -77,7 +77,7 @@ MarkerCube::MarkerCube()
 
 bool MarkerCube::isMineMarkerId(int id)
 {
-  for (uint8_t i = 0; i < sizeof(cube_side_qr_id_) / sizeof(cube_side_qr_id_[0]); i++)
+  for (uint8_t i = 0; i < (cube_side_qr_id_.size()); i++)
   {
     if (cube_side_qr_id_[i] == id)
     {
@@ -102,14 +102,54 @@ bool MarkerCube::calcCenter(cv::Mat cameraMatrix, cv::Mat distCoeffs, cv::Mat ne
 
     // TODO: constants? from param server?
     std::vector<Mat> corners_in_map_coords;
-    float z_goal_sber_robots = 0.421 - params.camera_position[2];
-    float z_goal_enemy_robots = 0.507 - params.camera_position[2];
-    float z_goal_top_side_markers = 0.35 - params.camera_position[2];
+    std::cout << params.markers_heights[std::to_string(marker.id_)]<< std::endl;
+    float z_goal = params.markers_heights[std::to_string(marker.id_)] - params.camera_position[2];
+    float z_goal_bot = z_goal - params.width_marker;
+    // float z_goal_sber_robots = 0.421 - params.camera_position[2];
+    // float z_goal_enemy_robots = 0.507 - params.camera_position[2];
+    // float z_goal_top_side_markers = 0.35 - params.camera_position[2];
     // float z_goal_top_side_enemys = 0.28 + 8 - params.camera_position[2];
+    // float z_goal = 0, z_goal_bot = 0;
+    // // SET Z_GOAL FOR CALCULUS (DEPENDING ON ENEMY\SBER_cube\TOP_SIDE )
+    // // if enemy marker
+    // if ((std::find(params.marker_ids["big_enemy_ids"].begin(), params.marker_ids["big_enemy_ids"].end(), marker.id_) !=
+    //      params.marker_ids["big_enemy_ids"].end()) ||
+    //     ((std::find(params.marker_ids["small_enemy_ids"].begin(), params.marker_ids["small_enemy_ids"].end(),
+    //                 marker.id_) != params.marker_ids["small_enemy_ids"].end())))
+    // {
+    //   z_goal = z_goal_enemy_robots;
+    //   // std::cout<< "z_goal "<< z_goal << " id " <<  marker.id_<<std::endl;
+    //   z_goal_bot = z_goal - params.len_of_cube_markers;
+    // }
+    // // ------------------------------------------------------------------------------------
+
+    // // if sber cube
+    // if ((std::find(params.marker_ids["small_sber_cube_ids"].begin(), params.marker_ids["small_sber_cube_ids"].end(),
+    //                marker.id_) != params.marker_ids["small_sber_cube_ids"].end()) ||
+    //     ((std::find(params.marker_ids["big_sber_cube_ids"].begin(), params.marker_ids["big_sber_cube_ids"].end(),
+    //                 marker.id_) != params.marker_ids["big_sber_cube_ids"].end())))
+    // {
+    //   z_goal = z_goal_sber_robots;
+    //   z_goal_bot = z_goal - params.width_marker;
+    // }
+    // // ------------------------------------------------------------------------------------
+
+
+    // //  top side markers
+    // if ((std::find(params.marker_ids["small_top_side_ids"].begin(), params.marker_ids["small_top_side_ids"].end(),
+    //                marker.id_) != params.marker_ids["small_top_side_ids"].end()) ||
+    //     ((std::find(params.marker_ids["big_top_side_ids"].begin(), params.marker_ids["big_top_side_ids"].end(),
+    //                 marker.id_) != params.marker_ids["big_top_side_ids"].end())))
+    // {
+    //   z_goal = z_goal_top_side_markers;
+    // }
+    // // ------------------------------------------------------------------------------------
+
+    
     std::vector<int> top_corners_ids_to_use = { 0, 1 };
     std::vector<int> bottom_corners_ids_to_use = { 3, 2 };
 
-    float z_goal = 0, z_goal_bot = 0;
+    // 
 
     // set corners id to be used for calculus of position
     if (std::find(params.markers_orientation["clockwise"].begin(), params.markers_orientation["clockwise"].end(),
@@ -133,41 +173,7 @@ bool MarkerCube::calcCenter(cv::Mat cameraMatrix, cv::Mat distCoeffs, cv::Mat ne
     }
     // ---------------------------------------------------------------
 
-    // SET Z_GOAL FOR CALCULUS (DEPENDING ON ENEMY\SBER_cube\TOP_SIDE )
-    // if enemy marker
-    if ((std::find(params.marker_ids["big_enemy_ids"].begin(), params.marker_ids["big_enemy_ids"].end(), marker.id_) !=
-         params.marker_ids["big_enemy_ids"].end()) ||
-        ((std::find(params.marker_ids["small_enemy_ids"].begin(), params.marker_ids["small_enemy_ids"].end(),
-                    marker.id_) != params.marker_ids["small_enemy_ids"].end())))
-    {
-      z_goal = z_goal_enemy_robots;
-      // std::cout<< "z_goal "<< z_goal << " id " <<  marker.id_<<std::endl;
-      z_goal_bot = z_goal - params.len_of_cube_markers;
-    }
-    // ------------------------------------------------------------------------------------
-
-    // if sber cube
-    if ((std::find(params.marker_ids["small_sber_cube_ids"].begin(), params.marker_ids["small_sber_cube_ids"].end(),
-                   marker.id_) != params.marker_ids["small_sber_cube_ids"].end()) ||
-        ((std::find(params.marker_ids["big_sber_cube_ids"].begin(), params.marker_ids["big_sber_cube_ids"].end(),
-                    marker.id_) != params.marker_ids["big_sber_cube_ids"].end())))
-    {
-      z_goal = z_goal_sber_robots;
-      z_goal_bot = z_goal - params.width_marker;
-    }
-    // ------------------------------------------------------------------------------------
-
-
-    //  top side markers
-    if ((std::find(params.marker_ids["small_top_side_ids"].begin(), params.marker_ids["small_top_side_ids"].end(),
-                   marker.id_) != params.marker_ids["small_top_side_ids"].end()) ||
-        ((std::find(params.marker_ids["big_top_side_ids"].begin(), params.marker_ids["big_top_side_ids"].end(),
-                    marker.id_) != params.marker_ids["big_top_side_ids"].end())))
-    {
-      z_goal = z_goal_top_side_markers;
-    }
-    // ------------------------------------------------------------------------------------
-
+    
     if (params.use_top_line_marker)
     {
       for (auto corner_id : top_corners_ids_to_use)
@@ -233,84 +239,89 @@ bool MarkerCube::calcCenter(cv::Mat cameraMatrix, cv::Mat distCoeffs, cv::Mat ne
       float det = corners_in_map_coords[0].at<double>(1, 0) - corners_in_map_coords[1].at<double>(1, 0);
       angle = atan2(dot, det);
     }
+    
     Vec3d angle_vec(0.0, 0.0, -(angle - 1.57));
+    angle_vec[2] += params.markers_poses[std::to_string(marker.id_)][2];
     marker.setRvec(angle_vec);
+    center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), params.markers_poses[std::to_string(marker.id_)]);
+    ;
+    // --------------------------------------------------------------------- //
+    // if ((marker.id_ == 2))
+    // {
+    //   // Vec3d angle_vec(0.0, 0.0, -(angle - 3.14));
+    //   // marker.setRvec(angle_vec);
+    //   center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(-0.03, -0.07, 0));
+    // }
 
-    if ((marker.id_ == 2))
-    {
-      // Vec3d angle_vec(0.0, 0.0, -(angle - 3.14));
-      // marker.setRvec(angle_vec);
-      center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(-0.03, -0.07, 0));
-    }
+    // else if ((marker.id_ == 8))
+    // {
+    //   Vec3d angle_vec(0.0, 0.0, -(angle - 3.14));
+    //   marker.setRvec(angle_vec);
+    //   center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.02, 0.07, 0));
+    // }
 
-    else if ((marker.id_ == 8))
-    {
-      Vec3d angle_vec(0.0, 0.0, -(angle - 3.14));
-      marker.setRvec(angle_vec);
-      center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.02, 0.07, 0));
-    }
+    // else if ((marker.id_ == 6))
+    // {
+    //   Vec3d angle_vec(0.0, 0.0, -(angle - 3.14));
+    //   marker.setRvec(angle_vec);
+    //   center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.02, -0.07, 0));
+    // }
 
-    else if ((marker.id_ == 6))
-    {
-      Vec3d angle_vec(0.0, 0.0, -(angle - 3.14));
-      marker.setRvec(angle_vec);
-      center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.02, -0.07, 0));
-    }
+    // else if ((marker.id_ == 1))
+    // {
+    //   Vec3d angle_vec(0.0, 0.0, (angle - 3.14));
+    //   marker.setRvec(angle_vec);
+    //   center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.07, -0.02, 0));
+    // }
 
-    else if ((marker.id_ == 1))
-    {
-      Vec3d angle_vec(0.0, 0.0, (angle - 3.14));
-      marker.setRvec(angle_vec);
-      center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.07, -0.02, 0));
-    }
+    // else if (marker.id_ == 3)
+    // {
+    //   Vec3d angle_vec(0.0, 0.0, -(angle - 3.14));
+    //   marker.setRvec(angle_vec);
+    //   center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.09, 0, 0));
+    // }
+    // else if (marker.id_ == 4)
 
-    else if (marker.id_ == 3)
-    {
-      Vec3d angle_vec(0.0, 0.0, -(angle - 3.14));
-      marker.setRvec(angle_vec);
-      center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.09, 0, 0));
-    }
-    else if (marker.id_ == 4)
+    // {
+    //   Vec3d angle_vec(0.0, 0.0, -(angle - 3.14));
 
-    {
-      Vec3d angle_vec(0.0, 0.0, -(angle - 3.14));
+    //   marker.setRvec(angle_vec);
 
-      marker.setRvec(angle_vec);
+    //   center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.03, 0., 0));
+    // }
 
-      center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.03, 0., 0));
-    }
+    // else if (marker.id_ == 45)
+    // {
+    //   Vec3d angle_vec(0.0, 0.0, (angle + 3.14 / 2.0));
 
-    else if (marker.id_ == 45)
-    {
-      Vec3d angle_vec(0.0, 0.0, (angle + 3.14 / 2.0));
+    //   marker.setRvec(angle_vec);
 
-      marker.setRvec(angle_vec);
+    //   center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.03, 0., 0));
+    // }
 
-      center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.03, 0., 0));
-    }
+    // else if (marker.id_ == 41)
+    // {
+    //   Vec3d angle_vec(0.0, 0.0, (angle + 3.14 / 2.0));
 
-    else if (marker.id_ == 41)
-    {
-      Vec3d angle_vec(0.0, 0.0, (angle + 3.14 / 2.0));
+    //   marker.setRvec(angle_vec);
 
-      marker.setRvec(angle_vec);
+    //   center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.03, 0., 0));
+    // }
 
-      center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.03, 0., 0));
-    }
+    // else if (marker.id_ == 31)
+    // {
+    //   Vec3d angle_vec(0.0, 0.0, (angle + 3.14 / 2.0));
 
-    else if (marker.id_ == 31)
-    {
-      Vec3d angle_vec(0.0, 0.0, (angle + 3.14 / 2.0));
+    //   marker.setRvec(angle_vec);
 
-      marker.setRvec(angle_vec);
+    //   center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.03, 0., 0));
+    // }
 
-      center_ = calcCenterOfRobot_by_disp(angle_vec, marker.getTvec(), Vec3d(0.03, 0., 0));
-    }
-
-    else
-    {
-      center_ = calcCenterOfCube(angle_vec, marker.getTvec());
-    }
+    // else
+    // {
+    //   center_ = calcCenterOfCube(angle_vec, marker.getTvec());
+    // }
+    // --------------------------------------------------------------- //
   }
   return true;
 }

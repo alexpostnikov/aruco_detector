@@ -44,6 +44,8 @@ typedef struct
   int max_missed_static_markers_= 20;
   std::map<std::string, std::vector<int>> marker_ids;
   std::map<std::string, std::vector<int>> markers_orientation;
+  std::map<std::string, float> markers_heights;
+  std::map<std::string, std::vector<float>> markers_poses;
 } ArucoDetectorParameters;
 
 class Marker {

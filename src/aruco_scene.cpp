@@ -873,7 +873,7 @@ geometry_msgs::PoseStamped SceneHolder::calc_msg_from_position(MarkerCube &aruco
 
   if (arucoCube.markers_[0].id_ == arucoCube.cube_side_qr_id_[0])
   {
-    mrot.setRPY(roll, pitch, yaw + 3.14 / 2);
+    // mrot.setRPY(roll, pitch, yaw + 3.14 / 2);
   }
 
   // if (arucoCube.markers_[0].id_ == arucoCube.cube_side_qr_id_[1])
@@ -881,15 +881,15 @@ geometry_msgs::PoseStamped SceneHolder::calc_msg_from_position(MarkerCube &aruco
   //   mrot.setRPY(roll, pitch, yaw + 3.14 / 2);
   // }
 
-  mrot.getRPY(roll, pitch, yaw);
+  
   if (arucoCube.markers_[0].id_ == arucoCube.cube_side_qr_id_[2])
   {
-    mrot.setRPY(roll, pitch, yaw - 3.14 / 2);
+    // mrot.setRPY(roll, pitch, yaw - 3.14 / 2);
   }
 
   if (arucoCube.markers_[0].id_ == arucoCube.cube_side_qr_id_[3])
   {
-    mrot.setRPY(roll, pitch, yaw - 3.14);
+    // mrot.setRPY(roll, pitch, yaw - 3.14);
   }
 
   mrot.getRotation(qrot);

@@ -54,7 +54,7 @@ void printCubesCoordsOnImage (Mat image, std::vector <MarkerCube> vector_of_cube
 
 cv::Point3d calcCenterOfCube (cv::Vec3d rvec, cv::Vec3d tvec);
 
-cv::Point3d calcCenterOfRobot_by_disp(cv::Vec3d rvec, cv::Vec3d tvec, cv::Vec3d delta_rvec);
+cv::Point3d calcCenterOfRobot_by_disp(cv::Vec3d rvec, cv::Vec3d tvec, std::vector<float> delta_rvec);
 
 bool readCamToMapTransform(const std::string &filename,   Mat &transform);
 

@@ -1,0 +1,34 @@
+<launch>    
+    <arg name="camera_format" default="4"/>
+    <arg name="log_output" default="screen" />
+    <arg name="video_device" default="/dev/video0"   />
+    <arg name="serverIp" default="10.0.0.26"   />
+    <arg name="side" default="green"/>
+    <arg name="video_from_cam" default="0"/>
+
+    <rosparam param="side" subst_value="True">$(arg side)</rosparam>
+    <rosparam command="load" file="$(find aruco_detector)/aruco_detector_params.yml" />
+    
+
+    <!-- ocam_usb_cam node -->
+
+    <node  if="$(arg video_from_cam)" pkg="ocam_usb_cam" 
+            type="ocam_usb_cam_node" 
+            name="ocam_usb_cam_node" 
+            required="true" 
+            clear_params="true" 
+            output="screen" >
+            <param name="camera_format" value="$(arg camera_format)" />
+	        <param name="video_device" value="$(arg video_device)" />
+    </node>
+    
+
+    <!-- aruco detector node -->
+    <node   pkg="aruco_detector" 
+            type="aruco_detector_node" 
+            name ="aruco_detector_node"
+	    required = "True" 
+            output="screen" >
+    </node>
+
+</launch>

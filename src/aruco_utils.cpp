@@ -119,6 +119,20 @@ bool readDetectorParameters(string filename, Ptr<aruco::DetectorParameters> &par
 }
 
 
+std::vector<float> parse_string_poses(std::string str)
+{
+  std::vector<float> result;
+  stringstream ss(str);
+  while( ss.good() )
+  {
+      string substr;
+      getline( ss, substr, ',' );
+
+      result.push_back(std::stof(substr));
+  }
+  return result;
+}
+
 std::vector<int> parse_string_ids(std::string str)
 {
   std::vector<int> result;
@@ -176,6 +190,12 @@ bool readRosParams(ros::NodeHandle pnh, ArucoDetectorParameters &aruco_params)
   // ------------end ----------//
 
 
+  
+  pnh.getParam("markers_height",aruco_params.markers_heights);
+  std::map<std::string, std::string> markers_pose;
+  pnh.getParam("markers_position",markers_pose);
+  for(auto const& imap: markers_pose) aruco_params.markers_poses[imap.first] = parse_string_poses(imap.second);
+
   // ---------- receive marker_orientation. Due to ros params server "feature" need to reparse string to vector ----------//
   std::map<std::string, std::string> markers_rotation;
   std::map<std::string, std::vector<int>> markers_rot_vect;
@@ -228,7 +248,7 @@ cv::Point3d calcCenterOfCube(cv::Vec3d rvec, cv::Vec3d tvec)
   return coodrinates_center;
 }
 
-cv::Point3d calcCenterOfRobot_by_disp(cv::Vec3d rvec, cv::Vec3d tvec, cv::Vec3d delta_rvec)
+cv::Point3d calcCenterOfRobot_by_disp(cv::Vec3d rvec, cv::Vec3d tvec, std::vector<float> delta_rvec)
 {
   cv::Mat rot_mat(3, 3, CV_64F);
   cv::Rodrigues(rvec, rot_mat);
@@ -239,7 +259,7 @@ cv::Point3d calcCenterOfRobot_by_disp(cv::Vec3d rvec, cv::Vec3d tvec, cv::Vec3d 
   cv::Mat T2 = Mat::zeros(4, 1, CV_64F);
   T2.at<double>(0, 0) = static_cast<double>(delta_rvec[0]);
   T2.at<double>(1, 0) = static_cast<double>(delta_rvec[1]);
-  T2.at<double>(2, 0) = static_cast<double>(delta_rvec[2]);
+  T2.at<double>(2, 0) = static_cast<double>(0.0);
   T2.at<double>(3, 0) = static_cast<double>(1.0);
 
   T2 = T1 * T2;
