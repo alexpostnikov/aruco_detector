@@ -28,7 +28,7 @@
     <node   pkg="aruco_detector" 
             type="aruco_detector_node" 
             name ="aruco_detector_node"
-	    required = "True" 
+	    required = "false" 
             output="screen" >
     </node>
 

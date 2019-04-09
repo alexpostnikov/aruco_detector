@@ -253,7 +253,7 @@ cv::Point3d calcCenterOfRobot_by_disp(cv::Vec3d rvec, cv::Vec3d tvec, std::vecto
   cv::Mat rot_mat(3, 3, CV_64F);
   cv::Rodrigues(rvec, rot_mat);
   cv::Mat T1 = Mat::eye(4, 4, CV_64F); // matrice allocated to center of marker
-  rot_mat.copyTo(T1(Range(0, 3), Range(0, 3)));
+  // rot_mat.copyTo(T1(Range(0, 3), Range(0, 3)));
   (Mat(tvec))(Range(0, 3), Range(0, 1)).copyTo(T1(Range(0, 3), Range(3, 4)));
 
   cv::Mat T2 = Mat::zeros(4, 1, CV_64F);

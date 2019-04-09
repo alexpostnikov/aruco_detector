@@ -174,7 +174,7 @@ bool MarkerCube::calcCenter(cv::Mat cameraMatrix, cv::Mat distCoeffs, cv::Mat ne
     // ---------------------------------------------------------------
 
     
-    if (params.use_top_line_marker)
+    if ((params.use_top_line_marker))
     {
       for (auto corner_id : top_corners_ids_to_use)
       {
@@ -185,7 +185,8 @@ bool MarkerCube::calcCenter(cv::Mat cameraMatrix, cv::Mat distCoeffs, cv::Mat ne
         corners_in_map_coords.push_back(corner_mat);
       }
     }
-    if (params.use_bottom_line_marker)
+    if (params.markers_heights[std::to_string(marker.id_)] > 0.39) params.use_bottom_line_marker = 0;
+    if (params.use_bottom_line_marker) 
     {
       for (auto corner_id : bottom_corners_ids_to_use)
       {
